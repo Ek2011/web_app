@@ -19,11 +19,8 @@ UPLOAD_FOLDER = "static/uploads"
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    try:
-        user = db_sess.get(User, int(user_id))
-        return user
-    finally:
-        db_sess.close()
+    user = db_sess.get(User, user_id)
+    return user
 
 @app.route('/logout')
 @login_required
@@ -51,7 +48,7 @@ def add_news():
         news = News()
         news.title = form.title.data
         news.content = form.content.data
-        news.file = filename = None
+        news.file = filename
         news.is_private = form.is_private.data
         current_user.news.append(news)
         db_sess.merge(current_user)
@@ -151,6 +148,49 @@ def dislike_action(id):
 
     return redirect(request.referrer or '/')
 
+#@app.route('/like/<int:id>')
+#@login_required
+#def like_action(id):
+#    db_sess = db_session.create_session()
+#    # Получаем объекты
+#    news = db_sess.get(News, id)
+#    user = db_sess.get(User, current_user.id)
+#
+#    if news:
+#        # Проверяем наличие ID пользователя в списке лайков
+#        # (SQLAlchemy лучше понимает сравнение объектов, когда они из одной сессии)
+#        if user in news.likes:
+#            news.likes.remove(user)
+#        else:
+#            if user in news.dislikes:
+#                news.dislikes.remove(user)
+#            news.likes.append(user)
+#
+#        db_sess.commit()
+#
+#    db_sess.close()  # Чтобы не было Timeout
+#    return redirect(request.referrer or '/')
+#
+#
+#@app.route('/dislike/<int:id>')
+#@login_required
+#def dislike_action(id):
+#    db_sess = db_session.create_session()
+#    news = db_sess.get(News, id)
+#    user = db_sess.get(User, current_user.id)
+#
+#    if news:
+#        if user in news.dislikes:
+#            news.dislikes.remove(user)
+#        else:
+#            if user in news.likes:
+#                news.likes.remove(user)
+#            news.dislikes.append(user)
+#
+#        db_sess.commit()
+#
+#    db_sess.close()  # Чтобы не было Timeout
+#    return redirect(request.referrer or '/')
 
 @app.route("/")
 def index():
