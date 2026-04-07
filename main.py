@@ -1,5 +1,7 @@
+import os
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.utils import secure_filename
 
 from forms.news import NewsForm
 from forms.user import RegisterForm, LoginForm
@@ -11,6 +13,7 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+UPLOAD_FOLDER = "static/uploads"
 
 
 @login_manager.user_loader
@@ -36,10 +39,16 @@ def main():
 def add_news():
     form = NewsForm()
     if form.validate_on_submit():
+        file = form.file.data
+        filename = None
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
         db_sess = db_session.create_session()
         news = News()
         news.title = form.title.data
         news.content = form.content.data
+        news.file = filename = None
         news.is_private = form.is_private.data
         current_user.news.append(news)
         db_sess.merge(current_user)
