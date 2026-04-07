@@ -19,8 +19,11 @@ UPLOAD_FOLDER = "static/uploads"
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
-
+    try:
+        user = db_sess.get(User, int(user_id))
+        return user
+    finally:
+        db_sess.close()
 
 @app.route('/logout')
 @login_required
@@ -101,21 +104,26 @@ def edit_news(id):
 @login_required
 def like_action(id):
     db_sess = db_session.create_session()
-    # 1. Получаем новость через сессию
-    news = db_sess.query(News).get(id)
+    news = db_sess.query(News).filter(News.id == id).first()
     if not news:
         abort(404)
 
-    # 2. Получаем "настоящий" объект пользователя в текущей сессии
-    user = db_sess.query(User).get(current_user.id)
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
 
-    # 3. Логика лайка
-    if user in news.likes:
-        news.likes.remove(user)  # Удаляем из дизлайков
-    if user not in news.dislikes:
-        news.dislikes.append(user)  # Добавляем в лайки
+    user_ids_in_likes = [u.id for u in news.likes]
+    user_ids_in_dislikes = [u.id for u in news.dislikes]
+
+    if user.id in user_ids_in_dislikes:
+        news.dislikes.remove(user)
+
+    if user.id in user_ids_in_likes:
+        news.likes.remove(user)
+    else:
+        news.likes.append(user)
+
     db_sess.commit()
-    # Возвращаемся на ту же страницу (или на главную, если referrer пуст)
+    db_sess.close()
+
     return redirect(request.referrer or '/')
 
 
@@ -123,17 +131,24 @@ def like_action(id):
 @login_required
 def dislike_action(id):
     db_sess = db_session.create_session()
-    news = db_sess.query(News).get(id)
-    user = db_sess.query(User).get(current_user.id)
-
+    news = db_sess.query(News).filter(News.id == id).first()
     if not news:
         abort(404)
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
 
-    if user in news.dislikes:
-        news.dislikes.remove(user)  # Удаляем из дизлайков
-    if user not in news.likes:
-        news.likes.append(user)  # Добавляем в лайки
+    user_ids_in_likes = [u.id for u in news.likes]
+    user_ids_in_dislikes = [u.id for u in news.dislikes]
+
+
+    if user.id in user_ids_in_likes:
+        news.likes.remove(user)  # Удаляем из дизлайков
+    if user.id in user_ids_in_dislikes:
+        news.dislikes.remove(user)
+    else:
+        news.dislikes.append(user)  # Добавляем в лайки
     db_sess.commit()
+    db_sess.close()
+
     return redirect(request.referrer or '/')
 
 
