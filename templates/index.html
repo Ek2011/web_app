@@ -16,6 +16,15 @@
             <div>
                 Автор - {{ item.user.name }}, Дата написания - {{ item.created_date }}
             </div>
+            <div class="mt-2">
+    <a href="/like/{{ item.id }}" class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
+        <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
+    </a>
+    <a href="/dislike/{{ item.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
+        <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
+    </a>
+</div>
+
             {% if current_user.is_authenticated and current_user == item.user %}
                 <div>
                     <a href="/news/{{ item.id }}" class="btn btn-secondary">
@@ -25,6 +34,7 @@
                         <i class="bi bi-trash"></i> Удалить
                     </a>
                 </div>
+
             {% endif %}
         </div>
     {% endfor %}

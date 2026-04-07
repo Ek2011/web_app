@@ -97,6 +97,46 @@ def edit_news(id):
     return render_template('news.html', title='Редактирование новости', form=form)
 
 
+@app.route('/like/<int:id>')
+@login_required
+def like_action(id):
+    db_sess = db_session.create_session()
+    # 1. Получаем новость через сессию
+    news = db_sess.query(News).get(id)
+    if not news:
+        abort(404)
+
+    # 2. Получаем "настоящий" объект пользователя в текущей сессии
+    user = db_sess.query(User).get(current_user.id)
+
+    # 3. Логика лайка
+    if user in news.likes:
+        news.likes.remove(user)  # Удаляем из дизлайков
+    if user not in news.dislikes:
+        news.dislikes.append(user)  # Добавляем в лайки
+    db_sess.commit()
+    # Возвращаемся на ту же страницу (или на главную, если referrer пуст)
+    return redirect(request.referrer or '/')
+
+
+@app.route('/dislike/<int:id>')
+@login_required
+def dislike_action(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).get(id)
+    user = db_sess.query(User).get(current_user.id)
+
+    if not news:
+        abort(404)
+
+    if user in news.dislikes:
+        news.dislikes.remove(user)  # Удаляем из дизлайков
+    if user not in news.likes:
+        news.likes.append(user)  # Добавляем в лайки
+    db_sess.commit()
+    return redirect(request.referrer or '/')
+
+
 @app.route("/")
 def index():
     db_sess = db_session.create_session()

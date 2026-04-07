@@ -4,6 +4,17 @@ from sqlalchemy import orm
 
 from .db_session import SqlAlchemyBase
 
+news_likes = sqlalchemy.Table(
+    'news_likes', SqlAlchemyBase.metadata,
+    sqlalchemy.Column('user_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id')),
+    sqlalchemy.Column('news_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('news.id'))
+)
+
+news_dislikes = sqlalchemy.Table(
+    'news_dislikes', SqlAlchemyBase.metadata,
+    sqlalchemy.Column('user_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id')),
+    sqlalchemy.Column('news_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('news.id'))
+)
 
 class News(SqlAlchemyBase):
     __tablename__ = 'news'
@@ -18,3 +29,6 @@ class News(SqlAlchemyBase):
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     user = orm.relationship('User')
     categories = orm.relationship("Category", secondary="association", backref="news")
+
+    likes = orm.relationship('User', secondary=news_likes, backref='liked_news')
+    dislikes = orm.relationship('User', secondary=news_dislikes, backref='disliked_news')
