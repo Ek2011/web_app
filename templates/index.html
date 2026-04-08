@@ -17,14 +17,14 @@
                 Автор - {{ item.user.name }}, Дата написания - {{ item.created_date }}
             </div>
             <div class="mt-2 mb-2">
-    <a href="/like/{{ item.id }}" class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
-        <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
-    </a>
-    <a href="/dislike/{{ item.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
-        <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
-    </a>
-    <a href="#" class="btn btn-sm {{ 'btn-primary'}}">Комментарии</a>
-</div>
+                <a href="/like/{{ item.id }}" class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
+                    <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
+                </a>
+                <a href="/dislike/{{ item.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
+                    <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
+                </a>
+                <a href="#" class="btn btn-sm {{ 'btn-primary'}}">Комментарии</a>
+            </div>
 
             {% if current_user.is_authenticated and current_user == item.user %}
                 <div>
