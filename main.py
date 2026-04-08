@@ -119,7 +119,6 @@ def like_action(id):
         news.likes.append(user)
 
     db_sess.commit()
-    db_sess.close()
 
     return redirect(request.referrer or '/')
 
@@ -144,7 +143,6 @@ def dislike_action(id):
     else:
         news.dislikes.append(user)  # Добавляем в лайки
     db_sess.commit()
-    db_sess.close()
 
     return redirect(request.referrer or '/')
 
