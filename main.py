@@ -70,11 +70,12 @@ def news_delete(id):
         db_sess.commit()
 
         # Проверяем, остались ли другие новости с таким же файлом
-        other_news = db_sess.query(News).filter(News.file == filename).first()
-        if not other_news:
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            if os.path.exists(file_path):
-                os.remove(file_path)
+        if filename:
+            other_news = db_sess.query(News).filter(News.file == filename).first()
+            if not other_news:
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
     else:
         abort(404)
     return redirect('/')
@@ -86,28 +87,39 @@ def edit_news(id):
     form = NewsForm()
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
+
+    if not news:
+        abort(404)
+
     if request.method == "GET":
-        if news:
-            form.title.data = news.title
-            form.content.data = news.content
-            form.is_private.data = news.is_private
-        else:
-            abort(404)
+        form.title.data = news.title
+        form.content.data = news.content
+        form.is_private.data = news.is_private
+
     if form.validate_on_submit():
-        if news:
-            file = form.file.data
-            filename = None
-            if file:
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-            news.title = form.title.data
-            news.content = form.content.data
-            news.file = filename
-            news.is_private = form.is_private.data
+        filename_old = news.file
+        file = form.file.data
+
+        news.title = form.title.data
+        news.content = form.content.data
+        news.is_private = form.is_private.data
+
+        if file:
+            filename_new = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER, filename_new))
+            news.file = filename_new
             db_sess.commit()
-            return redirect('/')
+
+            if filename_old and filename_old != filename_new:
+                other_news = db_sess.query(News).filter(News.file == filename_old).first()
+                if not other_news:
+                    file_path = os.path.join(UPLOAD_FOLDER, filename_old)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
         else:
-            abort(404)
+            db_sess.commit()
+
+        return redirect('/')
     return render_template('news.html', title='Редактирование новости', form=form, current_file=news.file)
 
 
