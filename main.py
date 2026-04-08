@@ -54,7 +54,7 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
-    return render_template('news.html', title='Добавление новости', form=form)
+    return render_template('news.html', title='Добавление новости', form=form, current_file=None)
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -63,8 +63,18 @@ def news_delete(id):
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
     if news:
+        filename = news.file
+        news.likes.clear()
+        news.dislikes.clear()
         db_sess.delete(news)
         db_sess.commit()
+
+        # Проверяем, остались ли другие новости с таким же файлом
+        other_news = db_sess.query(News).filter(News.file == filename).first()
+        if not other_news:
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            if os.path.exists(file_path):
+                os.remove(file_path)
     else:
         abort(404)
     return redirect('/')
@@ -74,9 +84,9 @@ def news_delete(id):
 @login_required
 def edit_news(id):
     form = NewsForm()
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
     if request.method == "GET":
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
         if news:
             form.title.data = news.title
             form.content.data = news.content
@@ -84,17 +94,21 @@ def edit_news(id):
         else:
             abort(404)
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
         if news:
+            file = form.file.data
+            filename = None
+            if file:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
             news.title = form.title.data
             news.content = form.content.data
+            news.file = filename
             news.is_private = form.is_private.data
             db_sess.commit()
             return redirect('/')
         else:
             abort(404)
-    return render_template('news.html', title='Редактирование новости', form=form)
+    return render_template('news.html', title='Редактирование новости', form=form, current_file=news.file)
 
 
 @app.route('/like/<int:id>')
@@ -146,49 +160,6 @@ def dislike_action(id):
 
     return redirect(request.referrer or '/')
 
-#@app.route('/like/<int:id>')
-#@login_required
-#def like_action(id):
-#    db_sess = db_session.create_session()
-#    # Получаем объекты
-#    news = db_sess.get(News, id)
-#    user = db_sess.get(User, current_user.id)
-#
-#    if news:
-#        # Проверяем наличие ID пользователя в списке лайков
-#        # (SQLAlchemy лучше понимает сравнение объектов, когда они из одной сессии)
-#        if user in news.likes:
-#            news.likes.remove(user)
-#        else:
-#            if user in news.dislikes:
-#                news.dislikes.remove(user)
-#            news.likes.append(user)
-#
-#        db_sess.commit()
-#
-#    db_sess.close()  # Чтобы не было Timeout
-#    return redirect(request.referrer or '/')
-#
-#
-#@app.route('/dislike/<int:id>')
-#@login_required
-#def dislike_action(id):
-#    db_sess = db_session.create_session()
-#    news = db_sess.get(News, id)
-#    user = db_sess.get(User, current_user.id)
-#
-#    if news:
-#        if user in news.dislikes:
-#            news.dislikes.remove(user)
-#        else:
-#            if user in news.likes:
-#                news.likes.remove(user)
-#            news.dislikes.append(user)
-#
-#        db_sess.commit()
-#
-#    db_sess.close()  # Чтобы не было Timeout
-#    return redirect(request.referrer or '/')
 
 @app.route("/")
 def index():
