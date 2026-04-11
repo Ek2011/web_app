@@ -8,6 +8,7 @@ from forms.user import RegisterForm, LoginForm
 from data.news import News
 from data.users import User
 from data import db_session
+from forms.comm import CommForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -171,6 +172,35 @@ def dislike_action(id):
     db_sess.commit()
 
     return redirect(request.referrer or '/')
+
+@app.route('/comments/<int:id>')
+def comments(id):
+    return render_template('comments.html', title='Комментарии', item_id=id)
+
+
+# Добавляем <int:id> в путь
+@app.route('/addcomm/<int:id>', methods=['GET', 'POST'])
+def addcomm(id):
+    form = CommForm()
+    if form.validate_on_submit():
+        # ... ваш код сохранения файла ...
+
+        db_sess = db_session.create_session()
+
+        # Если вы создаете КОММЕНТАРИЙ, используйте модель Comment (или аналогичную)
+        # Если вы все же создаете новость, то зачем вам id в аргументах?
+        new_item = News()
+        new_item.title = form.title.data
+        new_item.content = form.content.data
+        # new_item.news_id = id  # Пример привязки комментария к новости по id
+
+        current_user.news.append(new_item)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/')
+
+    # Передаем форму в шаблон
+    return render_template('addcomm.html', title='Добавление комментария', form=form)
 
 
 @app.route("/")
