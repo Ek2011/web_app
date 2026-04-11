@@ -6,5 +6,4 @@ from wtforms.validators import DataRequired
 
 class CommForm(FlaskForm):
     content = TextAreaField("Содержание")
-    is_private = BooleanField("Личное")
     submit = SubmitField('Применить')

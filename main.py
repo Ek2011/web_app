@@ -9,6 +9,7 @@ from data.news import News
 from data.users import User
 from data import db_session
 from forms.comm import CommForm
+from data.comments import Comment
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -173,9 +174,6 @@ def dislike_action(id):
 
     return redirect(request.referrer or '/')
 
-@app.route('/comments/<int:id>')
-def comments(id):
-    return render_template('comments.html', title='Комментарии', item_id=id)
 
 
 # Добавляем <int:id> в путь
@@ -183,24 +181,48 @@ def comments(id):
 def addcomm(id):
     form = CommForm()
     if form.validate_on_submit():
-        # ... ваш код сохранения файла ...
-
         db_sess = db_session.create_session()
 
-        # Если вы создаете КОММЕНТАРИЙ, используйте модель Comment (или аналогичную)
-        # Если вы все же создаете новость, то зачем вам id в аргументах?
-        new_item = News()
-        new_item.title = form.title.data
-        new_item.content = form.content.data
-        # new_item.news_id = id  # Пример привязки комментария к новости по id
+        comment = Comment()
+        comment.content = form.content.data
+        comment.news_id = id
+        comment.user_id = current_user.id
 
-        current_user.news.append(new_item)
-        db_sess.merge(current_user)
+        db_sess.add(comment)
         db_sess.commit()
         return redirect('/')
 
     # Передаем форму в шаблон
     return render_template('addcomm.html', title='Добавление комментария', form=form)
+
+
+@app.route('/comments/<int:id>')
+def show_comments(id):
+    db_sess = db_session.create_session()
+
+    # Получаем объект новости по id
+    news = db_sess.query(News).filter(News.id == id).first()
+
+    # Получаем все комментарии к этой новости
+    comments = db_sess.query(Comment).filter(Comment.news_id == id).all()
+
+    # Передаем ОБЪЕКТ news (чтобы работал news.id в шаблоне) и список comments
+    return render_template('comments.html', title='Комментарии', news=news, comments=comments)
+
+@app.route('/delete_comment/<int:id>')
+@login_required
+def delete_comment(id):
+    db_sess = db_session.create_session()
+    comment = db_sess.query(Comment).filter(Comment.id == id,
+                                            Comment.user_id == current_user.id).first()
+    if comment:
+        news_id = comment.news_id
+        db_sess.delete(comment)
+        db_sess.commit()
+        return redirect(f'/comments/{news_id}')
+    else:
+        abort(404)
+
 
 
 @app.route("/")
