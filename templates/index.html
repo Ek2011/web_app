@@ -11,22 +11,25 @@
         <div class="d-flex flex-wrap justify-content-center gap-3 align-items-start">
             {% for item in news %}
             <div class="card" style="width: 18rem;">
+                <div class="card-header bg-white">
+                   Автор - {{ item.user.name }}
+                 </div>
                 {% if item.file %}
-                    {% if type_file == "фото" %}
-                    test
-                    {% elif type_file == "видео" %}
-                    <video src="" class="object-fit-contain p-2" controls></video>
-                    {% elif type_file == "аудио" %}
-                    test
+                    {% set ful_file = UPLOAD_FOLDER + item.file %}
+                    {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
+                    <img src="{{ ful_file }}" class="card-img-top" alt="{{ item.file }} ">
+                    {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+                    <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
+                    {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+                    <audio src="{{ ful_file }}" controls style="width: 100%;"></audio>
+                    {% else %}
+                    <i class="bi bi-file-earmark-arrow-down"></i>
                     {% endif %}
                 {% endif %}
                 <div class="card-body">
                     <h2 class="card-title">{{ item.title }}</h2>
                     <div class="card-text">
                         {{ item.content }}
-                    </div>
-                    <div>
-                        Автор - {{ item.user.name }}, Дата написания - {{ item.created_date }}
                     </div>
                     <div class="mt-2 mb-2">
                         <a href="/like/{{ item.id }}" class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
@@ -47,6 +50,9 @@
                         </a>
                     </div>
                     {% endif %}
+                </div>
+                <div class="card-footer">
+                    Дата написания - {{ item.created_date }}
                 </div>
             </div>
             {% endfor %}
