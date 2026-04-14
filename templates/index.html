@@ -17,13 +17,23 @@
                 {% if item.file %}
                     {% set ful_file = UPLOAD_FOLDER + item.file %}
                     {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
-                    <img src="{{ ful_file }}" class="card-img-top" alt="{{ item.file }} ">
+                    <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
                     {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
                     <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
                     {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
-                    <audio src="{{ ful_file }}" controls style="width: 100%;"></audio>
+                    <audio src="{{ ful_file }}" controls style="width: 100%;" class="rounded-4 p-1"></audio>
+                    <style>
+                        audio::-webkit-media-controls-enclosure,
+                        audio::-webkit-media-controls-panel {
+                            border-radius: 0 !important;
+                        }
+                    </style>
                     {% else %}
-                    <i class="bi bi-file-earmark-arrow-down"></i>
+                    <div class="container p-2">
+                    <a href="{{ ful_file }}" class="btn btn-secondary" download style="width: 100%;">
+                        <i class="bi bi-file-earmark-arrow-down fs-5"></i> {{ item.file }}
+                    </a>
+                    </div>
                     {% endif %}
                 {% endif %}
                 <div class="card-body">
