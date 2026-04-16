@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Записи в блоге</h1>
     {% if current_user.is_authenticated %}
         <a href="news" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Добавить новость
@@ -15,7 +14,7 @@
                    Автор - {{ item.user.name }}
                  </div>
                 {% if item.file %}
-                    {% set ful_file = UPLOAD_FOLDER + item.file %}
+                    {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}
                     {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
                     <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
                     {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}

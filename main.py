@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 
 from forms.news import NewsForm
@@ -228,11 +229,18 @@ def delete_comment(id):
 @app.route("/")
 def index():
     db_sess = db_session.create_session()
-    type_file = "видео"
     if current_user.is_authenticated:
-        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True))
+        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True)).order_by(desc(News.created_date)).all()
     else:
-        news = db_sess.query(News).filter(News.is_private != True)
+        news = db_sess.query(News).filter(News.is_private != True).order_by(desc(News.created_date)).all()
+    return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
+
+
+@app.route("/my_news/<int:user_id>")
+@login_required
+def my_news(user_id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.user_id == user_id).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
 

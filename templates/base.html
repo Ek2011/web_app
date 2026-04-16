@@ -22,7 +22,6 @@
 </head>
 <body>
     <header>
-
     <div class="container-fluid p-3" data-bs-theme="dark">
         <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-4">
             <div class="container-fluid">
@@ -34,29 +33,29 @@
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Главное</a>
+                    <a class="nav-link active" aria-current="page" href="/">Главное</a>
                   </li>
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Меню
                     </a>
                     <ul class="dropdown-menu">
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="bi bi-star me-2"></i>Избранное
-        </a>
-    </li>
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="bi bi-card-text me-2"></i>Мои посты
-        </a>
-    </li>
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="bi bi-heart me-2"></i>Понравившееся
-        </a>
-    </li>
-</ul>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-star me-2"></i>Избранное
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/my_news/{{ current_user.id }}">
+                                <i class="bi bi-card-text me-2"></i>Мои посты
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-heart me-2"></i>Понравившееся
+                            </a>
+                        </li>
+                    </ul>
 
                   </li>
                 </ul>
@@ -65,12 +64,12 @@
                   <button class="btn btn-outline-success text-white" type="submit">Search</button>
                 </form>
                     <ul class="navbar-nav ms-auto p-1 align-items-center">
-    <li class="nav-item d-flex align-items-center">
-        <!-- Имя пользователя теперь просто текст рядом с кнопкой -->
-        <span class="text-white fs-5 fw-semibold me-3">{{ current_user.name }}</span>
-        <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
-    </li>
-</ul>
+                <li class="nav-item d-flex align-items-center">
+                        <!-- Имя пользователя теперь просто текст рядом с кнопкой -->
+                        <span class="text-white fs-5 fw-semibold me-3">{{ current_user.name }}</span>
+                        <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
+                    </li>
+                </ul>
               </div>
                 {% else %}
                 <form class="d-flex flex-grow-1 p-2" role="search">
@@ -86,8 +85,7 @@
         </nav>
     </div>
     </header>
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
