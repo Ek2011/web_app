@@ -244,6 +244,14 @@ def my_news(user_id):
     return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
 
+@app.route("/liked")
+@login_required
+def liked():
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.likes.any(id=current_user.id)).order_by(desc(News.created_date)).all()
+    return render_template("index.html", news=news, title="Понравившиеся посты", UPLOAD_FOLDER=UPLOAD_FOLDER)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
