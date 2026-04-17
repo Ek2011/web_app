@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -21,72 +21,83 @@
     </style>
 </head>
 <body>
-    <header>
+<header>
     <div class="container-fluid p-3" data-bs-theme="dark">
         <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-4">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">Oasis</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
+                <a class="navbar-brand" href="#">Oasis</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                {% if current_user.is_authenticated %}
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Главное</a>
-                  </li>
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Меню
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="bi bi-star me-2"></i>Избранное
+                    {% if current_user.is_authenticated %}
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item d-flex align-items-center mx-3">
+                            <a href="/news" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Добавить новость
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="/my_news/{{ current_user.id }}">
-                                <i class="bi bi-card-text me-2"></i>Мои посты
-                            </a>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Главное</a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="/liked">
-                                <i class="bi bi-hand-thumbs-up me-2"></i>Понравившееся
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Меню
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-star me-2"></i>Избранное
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/my_news/{{ current_user.id }}">
+                                        <i class="bi bi-card-text me-2"></i>Мои посты
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/liked">
+                                        <i class="bi bi-hand-thumbs-up me-2"></i>Понравившееся
+                                    </a>
+                                </li>
+                            </ul>
+
                         </li>
                     </ul>
-
-                  </li>
-                </ul>
-                <form class="d-flex flex-grow-1 p-2" role="search">
-                  <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search"/>
-                  <button class="btn btn-outline-success text-white" type="submit">Search</button>
-                </form>
+                    <form class="d-flex flex-grow-1 p-2" role="search">
+                        <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-outline-success text-white" type="submit">Search</button>
+                    </form>
                     <ul class="navbar-nav ms-auto p-1 align-items-center">
-                <li class="nav-item d-flex align-items-center">
-                        <!-- Имя пользователя теперь просто текст рядом с кнопкой -->
-                        <span class="text-white fs-5 fw-semibold me-3">{{ current_user.name }}</span>
-                        <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
-                    </li>
-                </ul>
-                {% else %}
-                <form class="d-flex flex-grow-1 p-2" role="search">
-                  <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search"/>
-                  <button class="btn btn-outline-success text-white" type="submit">Search</button>
-                </form>
-                <div class="btn-group p-1" role="group" aria-label="">
-                    <a href="/register" class="btn btn-primary">Регистрация</a>
-                    <a href="/login" class="btn btn-success">Вход</a>
-                </div>
-                {% endif %}
+                        <li class="nav-item d-flex align-items-center">
+                            <!-- Имя пользователя теперь просто текст рядом с кнопкой -->
+                            <span class="text-white fs-5 fw-semibold me-3">{{ current_user.name }}</span>
+                            <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
+                        </li>
+                    </ul>
+                    {% else %}
+                    <form class="d-flex flex-grow-1 p-2" role="search">
+                        <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-outline-success text-white" type="submit">Search</button>
+                    </form>
+                    <div class="btn-group p-1" role="group" aria-label="">
+                        <a href="/register" class="btn btn-primary">Регистрация</a>
+                        <a href="/login" class="btn btn-success">Вход</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </nav>
     </div>
-    </header>
-    {% block content %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</header>
+{% block content %}{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 </body>
 </html>
