@@ -29,8 +29,8 @@
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 {% if current_user.is_authenticated %}
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Главное</a>
@@ -70,17 +70,17 @@
                         <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
                     </li>
                 </ul>
-              </div>
                 {% else %}
                 <form class="d-flex flex-grow-1 p-2" role="search">
                   <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search"/>
                   <button class="btn btn-outline-success text-white" type="submit">Search</button>
                 </form>
-                    <div class="btn-group p-1" role="group" aria-label="">
-                      <a href="/register" class="btn btn-primary">Регистрация</a>
-                      <a href="/login" class="btn btn-success">Вход</a>
-                    </div>
+                <div class="btn-group p-1" role="group" aria-label="">
+                    <a href="/register" class="btn btn-primary">Регистрация</a>
+                    <a href="/login" class="btn btn-success">Вход</a>
+                </div>
                 {% endif %}
+                </div>
             </div>
         </nav>
     </div>
