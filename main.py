@@ -191,7 +191,7 @@ def addcomm(id):
 
         db_sess.add(comment)
         db_sess.commit()
-        return redirect('/')
+        return redirect(f"/comments/{id}")
 
     # Передаем форму в шаблон
     return render_template('addcomm.html', title='Добавление комментария', form=form)
