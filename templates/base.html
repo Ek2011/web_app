@@ -18,6 +18,26 @@
             -webkit-text-fill-color: transparent;
             display: inline-block;
         }
+
+        .btn-custom-add {
+            border: 3px solid #0a58ca;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease-in-out;
+            background: linear-gradient(45deg, #0d6efd, #9ec5fe, #ccccd9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-custom-add:hover {
+            box-shadow: 0 0 15px rgba(13, 110, 253, 0.6);
+            border-color: #9ec5fe !important;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -25,7 +45,7 @@
     <div class="container-fluid p-3" data-bs-theme="dark">
         <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-4">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Oasis</a>
+                <a class="navbar-brand" href="/">Oasis</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -34,13 +54,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     {% if current_user.is_authenticated %}
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        {% if current_user.is_authenticated %}
-                        <li class="nav-item d-flex align-items-center mx-3">
-                            <a href="/news" class="btn btn-primary">
+                        <li class="nav-item d-flex align-items-center mx-3" >
+                            <a href="/news" class="btn btn-custom-add">
                                 <i class="bi bi-plus-circle"></i> Добавить новость
                             </a>
                         </li>
-                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="/">Главное</a>
                         </li>
