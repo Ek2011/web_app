@@ -42,7 +42,7 @@
                         <a href="/dislike/{{ item.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
                             <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
                         </a>
-                         <a href="#" class="btn btn-sm btn-outline-warning">
+                         <a href="/favorite/{{ item.id }}" class="btn btn-sm {{ 'btn-warning' if current_user in item.favorites else 'btn-outline-warning' }}">
                             <i class="bi bi-star"></i>
                         </a>
                        <a href="/comments/{{ item.id }}" class="btn btn-sm {{ 'btn-primary'}}">Комментарии</a>

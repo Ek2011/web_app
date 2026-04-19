@@ -56,7 +56,7 @@ def add_news():
         current_user.news.append(news)
         db_sess.merge(current_user)
         db_sess.commit()
-        return redirect('/')
+        return redirect(request.referrer or '/')
     return render_template('news.html', title='Добавление новости', form=form, current_file=None)
 
 
@@ -175,6 +175,22 @@ def dislike_action(id):
 
     return redirect(request.referrer or '/')
 
+@app.route('/favorite/<int:id>')
+@login_required
+def favorite_action(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id).first()
+    if not news:
+        abort(404)
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+
+    if news in user.favorited_news:
+        user.favorited_news.remove(news)
+    else:
+        user.favorited_news.append(news)
+    db_sess.commit()
+
+    return redirect(request.referrer or '/')
 
 
 # Добавляем <int:id> в путь

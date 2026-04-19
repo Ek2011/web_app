@@ -16,6 +16,12 @@ news_dislikes = sqlalchemy.Table(
     sqlalchemy.Column('news_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('news.id'))
 )
 
+news_favorites = sqlalchemy.Table(
+    'news_favorites', SqlAlchemyBase.metadata,
+    sqlalchemy.Column('user_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id')),
+    sqlalchemy.Column('news_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('news.id'))
+)
+
 class News(SqlAlchemyBase):
     __tablename__ = 'news'
 
@@ -32,3 +38,4 @@ class News(SqlAlchemyBase):
 
     likes = orm.relationship('User', secondary=news_likes, backref='liked_news')
     dislikes = orm.relationship('User', secondary=news_dislikes, backref='disliked_news')
+    favorites = orm.relationship('User', secondary=news_favorites, backref='favorited_news')
