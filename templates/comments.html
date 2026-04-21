@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div class="container p-0 mb-5">
+<!--div class="container p-0 mb-5">
     <div class="d-flex justify-content-center">
         <div class="card" style="width: 100%; max-width: 28rem;">
             <div class="card-header bg-white">
@@ -39,7 +39,7 @@
                     {{ news.content }}
                 </div>#.
 
-                <!-- Блок кнопок (лайки/дизлайки) -->
+
                 <div class="mt-3 mb-2">
                     <a href="/like/{{ news.id }}"
                        class="btn btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
@@ -103,6 +103,105 @@
     {% endfor %}
 
     <a href="/" class="btn btn-link">Назад на главную</a>
+</div-->
+<div class="container-fluid p-4" style="background: #fff; min-height: 100vh; position: relative;">
+
+    <!-- КРЕСТИК (Твой переход на главную) -->
+    <a href="/" class="btn-close" style="position: absolute; top: 20px; right: 20px;"></a>
+
+    <!-- ВЕРХНЯЯ ЧАСТЬ (Твоя логика имен и дат) -->
+    <div class="mb-4">
+        <h3 style="font-weight: 500;">{{ news.user.name }}  {{ news.title }} </h3>
+        <p style="font-size: 0.8rem; color: #666;">
+            Дата создания: {{ news.created_date.strftime('%d.%m.%Y %H:%M') if news.created_date.strftime else news.created_date }}
+        </p>
+    </div>
+
+    <!-- МЕДИА-БЛОК (Твои проверки файлов + адаптивность) -->
+    <div style="text-align: center; margin: 30px;">
+        {% if news.file %}
+            {% set ful_file = url_for('static', filename='uploads/' + news.file) %}
+
+            {% if news.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
+                <img src="{{ ful_file }}" style="max-width: 100%; max-height: 500px; object-fit: contain;">
+
+            {% elif news.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+                <video src="{{ ful_file }}" controls style="max-width: 100%; max-height: 500px;"></video>
+
+            {% elif news.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+                <audio src="{{ ful_file }}" controls style="width: 100%;" class="mt-2"></audio>
+
+            {% else %}
+                <div class="p-3 border">
+                    <a href="{{ ful_file }}" class="btn btn-outline-secondary" download>
+                       <i class="bi bi-file-earmark-arrow-down"></i> Скачать {{ news.file }}
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- ОПИСАНИЕ -->
+    <div class="mb-3">
+        <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 5px;">Описание:</p>
+        <div style="white-space: pre-wrap; word-break: break-word;">{{ news.content }}</div>
+    </div>
+
+    <!-- КНОПКИ (Твоя логика лайков и прав доступа) -->
+    <div class="d-flex align-items-center gap-1">
+        <div class="mt-2">
+            <a href="/like/{{ news.id }}" class="btn btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
+                <i class="bi bi-hand-thumbs-up"></i> {{ news.likes|length }}
+            </a>
+            <a href="/dislike/{{ news.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in news.dislikes else 'btn-outline-danger' }}">
+                <i class="bi bi-hand-thumbs-down"></i> {{ news.dislikes|length }}
+            </a>
+            {% if current_user.is_authenticated %}
+             <a href="/favorite/{{ news.id }}" class="btn btn-sm {{ 'btn-warning' if current_user in news.favorites else 'btn-outline-warning' }}">
+                <i class="bi bi-star"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+        <div class="mt-2">
+            <a href="/addcomm/{{ news.id }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle"></i> Добавить комментарий
+            </a>
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-1 mb-5">
+        {% if current_user.is_authenticated and current_user == news.user %}
+        <div class="mt-2">
+            <a href="/news/{{ news.id }}" class="btn btn-secondary btn-sm">
+                <i class="bi bi-pencil-square"></i> Изменить
+            </a>
+            <a href="/news_delete/{{ news.id }}" class="btn btn-danger btn-sm">
+                <i class="bi bi-trash"></i> Удалить
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- КОММЕНТАРИИ (Сетка как на макете) -->
+    <div class="comments-section mt-5">
+        {% for comment in comments %}
+        <div class="row mb-4">
+            <!-- Слева: Автор и Дата -->
+            <div class="col-auto" style="min-width: 150px;">
+                <strong> {{ comment.user.name }} </strong>
+                <div style="font-size: 0.75rem; color: #888;">
+                    {{ comment.created_date.strftime('%d.%m.%Y %#H:%M') }}
+                </div>
+            </div>
+            <div class="col" style="word-break: break-all; line-height: 1.4;">
+                {{ comment.content }}
+            </div>
+        {% else %}
+            <div class="text-muted small">Комментариев пока нет.</div>
+        {% endfor %}
+    </div>
+
 </div>
 
 
