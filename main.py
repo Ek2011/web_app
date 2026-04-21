@@ -56,7 +56,7 @@ def add_news():
         current_user.news.append(news)
         db_sess.merge(current_user)
         db_sess.commit()
-        return redirect(request.referrer or '/')
+        return redirect('/')
     return render_template('news.html', title='Добавление новости', form=form, current_file=None)
 
 

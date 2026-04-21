@@ -4,9 +4,9 @@
     <div class="container p-3">
         <div class="d-flex flex-wrap justify-content-center gap-3 align-items-start">
             {% for item in news %}
-            <div class="card" style="width: 18rem;">
-                <div class="card-header bg-white">
-                   Автор - {{ item.user.name }}
+            <div class="card" style="width: 20rem;">
+                <div class="card-header bg-white" style="font-size: 20px;">
+                   {{ item.user.name }}
                  </div>
                 {% if item.file %}
                     {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}
@@ -58,8 +58,8 @@
                     </div>
                     {% endif %}
                 </div>
-                <div class="card-footer">
-                    Дата написания - {{ item.created_date }}
+                <div class="card-footer" style="font-size: 15px;">
+                    Дата написания - {{ item.created_date.strftime('%Y-%m-%d %#H:%M') }}
                 </div>
             </div>
             {% endfor %}
