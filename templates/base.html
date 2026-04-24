@@ -54,7 +54,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     {% if current_user.is_authenticated %}
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item d-flex align-items-center mx-3" >
+                        <li class="nav-item d-flex align-items-center mx-3">
                             <a href="/news" class="btn btn-custom-add">
                                 <i class="bi bi-plus-circle"></i> Добавить новость
                             </a>
@@ -94,7 +94,10 @@
                     <ul class="navbar-nav ms-auto p-1 align-items-center">
                         <li class="nav-item d-flex align-items-center">
                             <!-- Имя пользователя теперь просто текст рядом с кнопкой -->
-                            <span class="text-white fs-5 fw-semibold me-3">{{ current_user.name }}</span>
+                            <a href="/profile/{{ current_user.id }}"
+                               class="text-decoration-none text-white fs-5 fw-semibold me-3">
+                                {{ current_user.name }}
+                            </a>
                             <a href="/logout" class="btn btn-sm btn-outline-danger">Выйти</a>
                         </li>
                     </ul>

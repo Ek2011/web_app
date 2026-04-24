@@ -336,5 +336,19 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
+@app.route('/profile/<int:id>')
+@login_required
+def profile(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id).first()
+    if not user:
+        abort(404)
+
+    # Получаем все новости этого пользователя
+    news = db_sess.query(News).filter(News.user_id == id).all()
+
+    return render_template('profile.html', title=f'Профиль {user.name}', user=user, news=news)
+
+
 if __name__ == '__main__':
     main()
