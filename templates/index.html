@@ -1,72 +1,75 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container p-3">
-        <div class="d-flex flex-wrap justify-content-center gap-3 align-items-start">
-            {% for item in news %}
-            <div class="card" style="width: 20rem;">
-                <div class="card-header bg-white" style="font-size: 20px;">
-                   {{ item.user.name }}
-                 </div>
-                {% if item.file %}
-                    {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}
-                    {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
-                    <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
-                    {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
-                    <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
-                    {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
-                    <audio src="{{ ful_file }}" controls style="width: 100%;" class="rounded-4 p-1"></audio>
-                    <style>
-                        audio::-webkit-media-controls-enclosure,
-                        audio::-webkit-media-controls-panel {
-                            border-radius: 0 !important;
-                        }
-                    </style>
-                    {% else %}
-                    <div class="container p-2">
-                    <a href="{{ ful_file }}" class="btn btn-secondary" download style="width: 100%;">
-                        <i class="bi bi-file-earmark-arrow-down fs-5"></i> {{ item.file }}
-                    </a>
-                    </div>
-                    {% endif %}
-                {% endif %}
-                <div class="card-body">
-                    <h2 class="card-title">{{ item.title }}</h2>
-                    <div class="card-text">
-                        {{ item.content }}
-                    </div>
-                    <div class="mt-2">
-                        <a href="/like/{{ item.id }}" class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
-                            <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
-                        </a>
-                        <a href="/dislike/{{ item.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
-                            <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
-                        </a>
-                        {% if current_user.is_authenticated %}
-                         <a href="/favorite/{{ item.id }}" class="btn btn-sm {{ 'btn-warning' if current_user in item.favorites else 'btn-outline-warning' }}">
-                            <i class="bi bi-star"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                    <div class="mt-2">
-                        <a href="/comments/{{ item.id }}" class="btn btn-sm {{ 'btn-primary'}}">Комментарии</a>
-                    </div>
-                    {% if current_user.is_authenticated and current_user == item.user %}
-                    <div class="mt-2">
-                        <a href="/news/{{ item.id }}" class="btn btn-secondary btn-sm">
-                            <i class="bi bi-pencil-square"></i> Изменить
-                        </a>
-                        <a href="/news_delete/{{ item.id }}" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Удалить
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="card-footer" style="font-size: 15px;">
-                    Дата написания - {{ item.created_date.strftime('%Y-%m-%d %#H:%M') }}
-                </div>
+<div class="container p-3">
+    <div class="d-flex flex-wrap justify-content-center gap-3 align-items-start">
+        {% for item in news %}
+        <div class="card" style="width: 20rem;">
+            <div class="card-header bg-white" style="font-size: 20px;">
+                {{ item.user.name }}
             </div>
-            {% endfor %}
+            {% if item.file %}
+            {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}
+            {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
+            <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
+            {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+            <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
+            {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+            <audio src="{{ ful_file }}" controls style="width: 100%;" class="rounded-4 p-1"></audio>
+            <style>
+                audio::-webkit-media-controls-enclosure,
+                audio::-webkit-media-controls-panel {
+                    border-radius: 0 !important;
+                }
+            </style>
+            {% else %}
+            <div class="container p-2">
+                <a href="{{ ful_file }}" class="btn btn-secondary" download style="width: 100%;">
+                    <i class="bi bi-file-earmark-arrow-down fs-5"></i> {{ item.file }}
+                </a>
+            </div>
+            {% endif %}
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title">{{ item.title }}</h2>
+                <div class="card-text">
+                    {{ item.content }}
+                </div>
+                <div class="mt-2">
+                    <a href="/like/{{ item.id }}"
+                       class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
+                        <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
+                    </a>
+                    <a href="/dislike/{{ item.id }}"
+                       class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
+                        <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
+                    </a>
+                    {% if current_user.is_authenticated %}
+                    <a href="/add_starred/{{ item.id }}"
+                       class="btn btn-sm {{ 'btn-warning' if current_user in item.starred else 'btn-outline-warning' }}">
+                        <i class="bi bi-star"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="mt-2">
+                    <a href="/comments/{{ item.id }}" class="btn btn-sm {{ 'btn-primary'}}">Комментарии</a>
+                </div>
+                {% if current_user.is_authenticated and current_user == item.user %}
+                <div class="mt-2">
+                    <a href="/news/{{ item.id }}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-pencil-square"></i> Изменить
+                    </a>
+                    <a href="/news_delete/{{ item.id }}" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash"></i> Удалить
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer" style="font-size: 15px;">
+                Дата написания - {{ item.created_date.strftime('%Y-%m-%d %#H:%M') }}
+            </div>
         </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

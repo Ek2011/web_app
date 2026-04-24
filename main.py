@@ -25,6 +25,7 @@ def load_user(user_id):
     user = db_sess.get(User, user_id)
     return user
 
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -164,7 +165,6 @@ def dislike_action(id):
     user_ids_in_likes = [u.id for u in news.likes]
     user_ids_in_dislikes = [u.id for u in news.dislikes]
 
-
     if user.id in user_ids_in_likes:
         news.likes.remove(user)  # Удаляем из дизлайков
     if user.id in user_ids_in_dislikes:
@@ -174,6 +174,7 @@ def dislike_action(id):
     db_sess.commit()
 
     return redirect(request.referrer or '/')
+
 
 @app.route('/favorite/<int:id>')
 @login_required
@@ -207,7 +208,7 @@ def addcomm(id):
 
         db_sess.add(comment)
         db_sess.commit()
-        return redirect(f"/comments/{id}")#/
+        return redirect(f"/comments/{id}")  # /
 
     # Передаем форму в шаблон
     return render_template('addcomm.html', title='Добавление комментария', form=form)
@@ -226,6 +227,7 @@ def show_comments(id):
     # Передаем ОБЪЕКТ news (чтобы работал news.id в шаблоне) и список comments
     return render_template('comments.html', title='Комментарии', news=news, comments=comments)
 
+
 @app.route('/delete_comment/<int:id>')
 @login_required
 def delete_comment(id):
@@ -241,12 +243,12 @@ def delete_comment(id):
         abort(404)
 
 
-
 @app.route("/")
 def index():
     db_sess = db_session.create_session()
     if current_user.is_authenticated:
-        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True)).order_by(desc(News.created_date)).all()
+        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True)).order_by(
+            desc(News.created_date)).all()
     else:
         news = db_sess.query(News).filter(News.is_private != True).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
@@ -266,6 +268,36 @@ def liked():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.likes.any(id=current_user.id)).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, title="Понравившиеся посты", UPLOAD_FOLDER=UPLOAD_FOLDER)
+
+@app.route('/add_starred/<int:id>')
+@login_required
+def add_starred_news(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).get(id)
+    if not news:
+        abort(404)
+    user = db_sess.query(User).get(current_user.id)
+    if news in user.starred_news:
+        user.starred_news.remove(news)  # Убираем из избранного
+    else:
+        user.starred_news.append(news)  # Добавляем в избранное
+
+    db_sess.commit()
+    return redirect(request.referrer or '/')
+
+
+@app.route('/starred')
+@login_required
+def starred():
+    db_sess = db_session.create_session()
+    # Получаем юзера в текущей сессии
+    user = db_sess.query(User).get(current_user.id)
+
+    # Забираем список новостей.
+    # Благодаря lazy='subquery' в модели, ошибка 500 должна исчезнуть.
+    news = user.starred_news
+
+    return render_template('index.html', title='Избранное', news=news)
 
 
 @app.route('/register', methods=['GET', 'POST'])
