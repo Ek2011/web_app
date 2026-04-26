@@ -269,35 +269,37 @@ def liked():
     news = db_sess.query(News).filter(News.likes.any(id=current_user.id)).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, title="Понравившиеся посты", UPLOAD_FOLDER=UPLOAD_FOLDER)
 
+
 @app.route('/add_starred/<int:id>')
 @login_required
 def add_starred_news(id):
     db_sess = db_session.create_session()
     news = db_sess.query(News).get(id)
+    user = db_sess.query(User).get(current_user.id)
+
     if not news:
         abort(404)
-    user = db_sess.query(User).get(current_user.id)
-    if news in user.starred_news:
-        user.starred_news.remove(news)  # Убираем из избранного
+
+    if user in news.starred:
+        news.starred.remove(user)
     else:
-        user.starred_news.append(news)  # Добавляем в избранное
+        news.starred.append(user)
 
     db_sess.commit()
     return redirect(request.referrer or '/')
 
 
-@app.route('/starred')
+@app.route("/starred")
 @login_required
 def starred():
     db_sess = db_session.create_session()
-    # Получаем юзера в текущей сессии
     user = db_sess.query(User).get(current_user.id)
-
-    # Забираем список новостей.
-    # Благодаря lazy='subquery' в модели, ошибка 500 должна исчезнуть.
     news = user.starred_news
 
-    return render_template('index.html', title='Избранное', news=news)
+    return render_template("index.html",
+                           news=news,
+                           title="Избранное",
+                           UPLOAD_FOLDER=UPLOAD_FOLDER)  # Вот этого не хватало
 
 
 @app.route('/register', methods=['GET', 'POST'])
