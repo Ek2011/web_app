@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4 border-0 shadow-sm bg-light">
+        <div class="card-body d-flex align-items-center gap-4 p-4">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                 style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold;">
+                {{ user.name[0] | upper }}
+            </div>
+            <div>
+                <h2 class="mb-1">{{ user.name }}</h2>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-envelope"></i> {{ user.email }}
+                </p>
+                {% if user.about %}
+            <div class="mt-3 p-3 bg-white rounded-3 border-start border-primary border-4">
+                <h6 class="text-uppercase fw-bold text-primary" style="font-size: 0.75rem;">О себе</h6>
+                <p class="mb-0 italic">{{ user.about }}</p>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-4 text-center">Публикации автора</h3>
+
+    <div class="container p-3">
+        <div class="d-flex flex-wrap justify-content-center gap-3 align-items-start">
+            {% for item in news %}
+            <div class="card" style="width: 20rem;">
+                <div class="card-header bg-white" style="font-size: 20px;">
+                    {{ item.user.name }}
+                </div>
+                {% if item.file %}
+                {% set ful_file = url_for('static', filename='uploads/' + item.file) %}
+                {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
+                <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
+                {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+                <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
+                {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+                <audio src="{{ ful_file }}" controls style="width: 100%;" class="rounded-4 p-1"></audio>
+                {% else %}
+                <div class="container p-2">
+                    <a href="{{ ful_file }}" class="btn btn-secondary" download style="width: 100%;">
+                        <i class="bi bi-file-earmark-arrow-down fs-5"></i> {{ item.file }}
+                    </a>
+                </div>
+                {% endif %}
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ item.title }}</h2>
+                    <div class="card-text">
+                        {{ item.content }}
+                    </div>
+                    <div class="mt-2">
+                        <a href="/like/{{ item.id }}"
+                           class="btn btn-sm {{ 'btn-success' if current_user in item.likes else 'btn-outline-success' }}">
+                            <i class="bi bi-hand-thumbs-up"></i> {{ item.likes|length }}
+                        </a>
+                        <a href="/dislike/{{ item.id }}"
+                           class="btn btn-sm {{ 'btn-danger' if current_user in item.dislikes else 'btn-outline-danger' }}">
+                            <i class="bi bi-hand-thumbs-down"></i> {{ item.dislikes|length }}
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <a href="/add_starred/{{ item.id }}"
+                           class="btn btn-sm {{ 'btn-warning' if current_user in item.starred else 'btn-outline-warning' }}">
+                            <i class="bi bi-star"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-2">
+                        <a href="/comments/{{ item.id }}" class="btn btn-sm btn-primary">Комментарии</a>
+                    </div>
+                    {% if current_user.is_authenticated and current_user == item.user %}
+                    <div class="mt-2">
+                        <a href="/news/{{ item.id }}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Изменить
+                        </a>
+                        <a href="/news_delete/{{ item.id }}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Удалить
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer" style="font-size: 15px;">
+                    {# Проверка на случай если даты нет #}
+                    Дата написания - {{ item.created_date.strftime('%Y-%m-%d %H:%M') if item.created_date else 'Не указана' }}
+                </div>
+            </div>
+            {% else %}
+                <div class="alert alert-light">У этого пользователя пока нет постов.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
