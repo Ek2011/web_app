@@ -318,6 +318,13 @@ def reqister():
             email=form.email.data,
             about=form.about.data
         )
+        if form.file.data:
+            file = form.file.data
+            filename = secure_filename(file.filename)
+            # Сохраняем физически в папку
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            # Записываем имя файла в базу данных пользователю
+            user.file = filename
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
