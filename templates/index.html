@@ -6,7 +6,9 @@
         {% for item in news %}
         <div class="card" style="width: 20rem;">
             <div class="card-header bg-white" style="font-size: 20px;">
-                {{ item.user.name }}
+                <a href="/profile/{{ item.user.id }}" class="text-decoration-none text-dark">
+        {{ item.user.name }}
+    </a>
             </div>
             {% if item.file %}
             {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}

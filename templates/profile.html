@@ -7,11 +7,13 @@
             <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden shadow-sm bg-primary"
                  style="width: 80px; height: 80px; flex-shrink: 0;">
                 {% if user.file %}
-                    <img src="{{ url_for('static', filename='uploads/' + user.file) }}"
-                         alt="{{ user.name }}"
-                         style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ url_for('static', filename='uploads/' + user.file) }}"
+                     alt="{{ user.name }}"
+                     class="img-preview"
+                     style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                     data-bs-toggle="modal" data-bs-target="#imageModal">
                 {% else %}
-                    <span class="text-white" style="font-size: 2rem; font-weight: bold;">
+                <span class="text-white" style="font-size: 2rem; font-weight: bold;">
                         {{ user.name[0] | upper }}
                     </span>
                 {% endif %}
@@ -22,11 +24,11 @@
                     <i class="bi bi-envelope"></i> {{ user.email }}
                 </p>
                 {% if user.about %}
-            <div class="mt-3 p-3 bg-white rounded-3 border-start border-primary border-4">
-                <h6 class="text-uppercase fw-bold text-primary" style="font-size: 0.75rem;">О себе</h6>
-                <p class="mb-0 italic">{{ user.about }}</p>
-            </div>
-            {% endif %}
+                <div class="mt-3 p-3 bg-white rounded-3 border-start border-primary border-4">
+                    <h6 class="text-uppercase fw-bold text-primary" style="font-size: 0.75rem;">О себе</h6>
+                    <p class="mb-0 italic">{{ user.about }}</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -93,14 +95,40 @@
                 </div>
                 <div class="card-footer" style="font-size: 15px;">
                     {# Проверка на случай если даты нет #}
-                    Дата написания - {{ item.created_date.strftime('%Y-%m-%d %H:%M') if item.created_date else 'Не указана' }}
+                    Дата написания - {{ item.created_date.strftime('%Y-%m-%d %H:%M') if item.created_date else 'Не
+                    указана' }}
                 </div>
             </div>
             {% else %}
-                <div class="alert alert-light">У этого пользователя пока нет постов.</div>
+            <div class="alert alert-light">У этого пользователя пока нет постов.</div>
             {% endfor %}
         </div>
     </div>
 </div>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <img src="" id="fullSizeImage" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageModal = document.getElementById('imageModal');
+        const fullSizeImage = document.getElementById('fullSizeImage');
+
+        document.querySelectorAll('.img-preview').forEach(img => {
+            img.addEventListener('click', function () {
+                fullSizeImage.src = this.src;
+            });
+        });
+    });
+</script>
+
+
 {% endblock %}
 <!--j>
