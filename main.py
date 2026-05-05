@@ -18,7 +18,7 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-app.config['UPLOAD_FOLDER'] = "static/uploads/"
+UPLOAD_FOLDER = "static/uploads/"
 
 
 @login_manager.user_loader
@@ -253,7 +253,7 @@ def index():
             desc(News.created_date)).all()
     else:
         news = db_sess.query(News).filter(News.is_private != True).order_by(desc(News.created_date)).all()
-    return render_template("index.html", news=news, UPLOAD_FOLDER=app.config['UPLOAD_FOLDER'])
+    return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
 
 
@@ -375,7 +375,7 @@ def edit_profile():
         if form.file.data:
             file = form.file.data
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
             user.file = filename  # Меняем данные у найденного объекта user
 
         user.name = form.name.data
