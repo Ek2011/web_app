@@ -12,31 +12,31 @@
 
     <!-- Блок сообщения -->
     <!-- g-0 убирает зазоры, чтобы контент шел точно в край -->
-    <section class="row mb-4 border g-0">
+    <section class="row mb-3 g-0">
 
         <!-- Левый отступ: d-none (скрыт), d-lg-block (появится после 992px) -->
-        <div class="col-lg-2 d-none d-lg-flex border align-items-center justify-content-center"></div>
+        <div class="col-lg-3 d-none d-lg-flex align-items-center justify-content-center"></div>
 
         <!-- Центр: col-12 (весь экран), col-lg-8 (после 992px) -->
-        <div class="col-12 col-lg-8 d-flex flex-column gap-3 p-3">
+        <div class="col-12 col-lg-6 d-flex flex-column gap-3 p-3">
 
             <!-- Заголовок -->
-            <div class="row align-items-center border border-bottom  g-0">
+            <div class="row align-items-center g-0">
                 <div class="col-lg-0 d-none d-lg-block small"></div>
                 <div class="col-11 col-lg-11 p-1">
-                    <h2 class="m-0">{{ news.user.name }}  {{ news.title }} </h2>
+                    <h2 class="m-0">{{ news.user.name }}:  {{ news.title }} </h2>
                     <p class="m-0" style="font-size: 1rem; color: #666;">
                         Дата создания: {{ news.created_date.strftime('%d.%m.%Y %H:%M') if news.created_date.strftime else news.created_date }}
                     </p>
                 </div>
                 <div class="col-1 col-lg-1 align-self-start text-end">
-                    <a href="/" class="btn-close fs-4 me-2"></a>
+                    <a href="/" class="bi bi-x fs-2 me-2 text-dark"></a>
                 </div>
                 <div class="col-lg-0 d-none d-lg-block small"></div>
             </div>
             <!-- Файл -->
             {% if news.file %}
-                <div class="border p-4 text-center">
+                <div class="p-2 text-center">
                     {% set ful_file = url_for('static', filename='uploads/' + news.file) %}
                     {% if news.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
                         <img src="{{ ful_file }}" style="max-width: 100%; max-height: 80vh; object-fit: contain;">
@@ -48,8 +48,8 @@
                         <audio src="{{ ful_file }}" controls style="width: 100%;" class="mt-2"></audio>
 
                     {% else %}
-                        <div class="p-3 border">
-                            <a href="{{ ful_file }}" class="btn btn-outline-secondary" download>
+                        <div class="roundede-2">
+                            <a href="{{ ful_file }}" class="fs-4 btn btn-outline-secondary" download>
                                <i class="bi bi-file-earmark-arrow-down"></i> Скачать {{ news.file }}
                             </a>
                         </div>
@@ -58,46 +58,46 @@
             {% endif %}
             <!-- Описание -->
             {% if news.content %}
-            <div class="border p-2">
+            <div class="p-2">
                 <p class="fs-4 fw-medium mb-1">Описание:</p>
                 <div class="fs-5 text-break" style="white-space: pre-wrap;">{{ news.content }}</div>
             </div>
             {% endif %}
             <!-- Кнопки -->
-            <div class="border p-2">
-                <div class="mt-2">
+            <div class="p-2">
+                <div class="mt-0">
                     {% if current_user.is_authenticated %}
-                        <a href="/like/{{ news.id }}" class="btn btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
+                        <a href="/like/{{ news.id }}" class="btn fs-6 btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
                             <i class="bi bi-hand-thumbs-up"></i> {{ news.likes|length }}
                         </a>
-                        <a href="/dislike/{{ news.id }}" class="btn btn-sm {{ 'btn-danger' if current_user in news.dislikes else 'btn-outline-danger' }}">
+                        <a href="/dislike/{{ news.id }}" class="btn fs-6 btn-sm {{ 'btn-danger' if current_user in news.dislikes else 'btn-outline-danger' }}">
                             <i class="bi bi-hand-thumbs-down"></i> {{ news.dislikes|length }}
                         </a>
-                        <a href="/favorite/{{ news.id }}" class="btn btn-sm {{ 'btn-warning' if current_user in news.favorites else 'btn-outline-warning' }}">
+                        <a href="/favorite/{{ news.id }}" class="btn fs-6 btn-sm {{ 'btn-warning' if current_user in news.favorites else 'btn-outline-warning' }}">
                             <i class="bi bi-star"></i>
                         </a>
                     {% else %}
-                        <a href="#" class="btn btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
+                        <a href="#" class="btn fs-6 btn-sm {{ 'btn-success' if current_user in news.likes else 'btn-outline-success' }}">
                             <i class="bi bi-hand-thumbs-up"></i> {{ news.likes|length }}
                         </a>
-                        <a href="#" class="btn btn-sm {{ 'btn-danger' if current_user in news.dislikes else 'btn-outline-danger' }}">
+                        <a href="#" class="btn fs-6 btn-sm {{ 'btn-danger' if current_user in news.dislikes else 'btn-outline-danger' }}">
                             <i class="bi bi-hand-thumbs-down"></i> {{ news.dislikes|length }}
                         </a>
                     {% endif %}
                 </div>
                 {% if current_user.is_authenticated %}
                     <div class="mt-2">
-                        <a href="/addcomm/{{ news.id }}" class="btn btn-primary btn-sm">
+                        <a href="/addcomm/{{ news.id }}" class="btn fs-6 btn-primary btn-sm">
                             <i class="bi bi-plus-circle"></i> Добавить комментарий
                         </a>
                     </div>
                 {% endif %}
                 {% if current_user.is_authenticated and current_user == news.user %}
                     <div class="mt-2">
-                        <a href="/news/{{ news.id }}" class="btn btn-secondary btn-sm">
+                        <a href="/news/{{ news.id }}" class="btn fs-6 btn-secondary btn-sm">
                             <i class="bi bi-pencil-square"></i> Изменить
                         </a>
-                        <a href="/news_delete/{{ news.id }}" class="btn btn-danger btn-sm">
+                        <a href="/news_delete/{{ news.id }}" class="btn fs-6 btn-danger btn-sm">
                             <i class="bi bi-trash"></i> Удалить
                         </a>
                     </div>
@@ -107,16 +107,16 @@
 
 
         <!-- Правый отступ: d-none (скрыт), d-lg-block (появится после 992px) -->
-        <div class="col-lg-2 d-none d-lg-flex border align-items-center justify-content-center"></div>
+        <div class="col-lg-3 d-none d-lg-flex align-items-center justify-content-center"></div>
     </section>
 
     <!-- Блок комментариев -->
-    <section class="row g-0 border">
+    <section class="row g-0">
         <!-- Боковина 5% (примерно col-1) -->
-        <div class="col-lg-1 d-none d-lg-flex border align-items-center justify-content-center"></div>
+        <div class="col-lg-2 d-none d-lg-flex align-items-center justify-content-center"></div>
 
         <!-- Основная часть комментариев -->
-        <div class="col-12 col-lg-10 border">
+        <div class="col-12 col-lg-8">
             {% for comment in comments %}
                 <div class="card m-2">
                     <div class="card-body">
@@ -142,7 +142,7 @@
         </div>
 
         <!-- Боковина 5% (примерно col-1) -->
-        <div class="col-lg-1 d-none d-lg-flex border align-items-center justify-content-center"></div>
+        <div class="col-lg-2 d-none d-lg-flex align-items-center justify-content-center"></div>
     </section>
 </div>
 
