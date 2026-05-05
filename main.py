@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
+from flask import flash, redirect
 
 from forms.news import NewsForm
 from forms.user import RegisterForm, LoginForm
@@ -11,12 +12,13 @@ from data.users import User
 from data import db_session
 from forms.comm import CommForm
 from data.comments import Comment
+from forms.edit_profile import EditProfileForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-UPLOAD_FOLDER = "static/uploads/"
+app.config['UPLOAD_FOLDER'] = "static/uploads/"
 
 
 @login_manager.user_loader
@@ -251,7 +253,8 @@ def index():
             desc(News.created_date)).all()
     else:
         news = db_sess.query(News).filter(News.is_private != True).order_by(desc(News.created_date)).all()
-    return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
+    return render_template("index.html", news=news, UPLOAD_FOLDER=app.config['UPLOAD_FOLDER'])
+
 
 
 @app.route("/my_news/<int:user_id>")
@@ -358,6 +361,38 @@ def profile(id):
     news = db_sess.query(News).filter(News.user_id == id).all()
 
     return render_template('profile.html', title=f'Профиль {user.name}', user=user, news=news)
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        # Находим пользователя в базе по ID текущего пользователя
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+
+        if form.file.data:
+            file = form.file.data
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            user.file = filename  # Меняем данные у найденного объекта user
+
+        user.name = form.name.data
+        user.email = form.email.data
+        user.about = form.about.data
+
+        db_sess.commit()  # Теперь commit увидит изменения в объекте user
+        flash('Профиль обновлен!')
+        return redirect(f'/profile/{user.id}')
+
+    # Предзаполнение формы текущими данными
+    elif request.method == 'GET':
+        form.name.data = current_user.name
+        form.email.data = current_user.email
+        form.about.data = current_user.about
+
+    return render_template('edit_profile.html', title='Редактирование профиля', form=form)
 
 
 if __name__ == '__main__':

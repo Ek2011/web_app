@@ -14,7 +14,7 @@
             {% set ful_file = '/' + UPLOAD_FOLDER + item.file %}
             {% if item.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
             <img src="{{ ful_file }}" class="card-img-top p-2" alt="{{ item.file }} ">
-            {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+            {% elif item.file.endswith(('.mp4', '.webm', '.ogg', '.mov', '.avi')) %}
             <video src="{{ ful_file }}" class="object-fit-contain p-2" controls></video>
             {% elif item.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
             <audio src="{{ ful_file }}" controls style="width: 100%;" class="rounded-4 p-1"></audio>
