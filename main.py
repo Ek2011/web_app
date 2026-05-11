@@ -248,13 +248,23 @@ def delete_comment(id):
 @app.route("/")
 def index():
     db_sess = db_session.create_session()
-    if current_user.is_authenticated:
-        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True)).order_by(
-            desc(News.created_date)).all()
-    else:
-        news = db_sess.query(News).filter(News.is_private != True).order_by(desc(News.created_date)).all()
-    return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
+    search_query = request.args.get('q', '').strip()
+
+    if current_user.is_authenticated:
+        query = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True))
+    else:
+        query = db_sess.query(News).filter(News.is_private != True)
+
+    if search_query:
+        query = query.filter(
+            (News.title.like(f"%{search_query}%")) |
+            (News.content.like(f"%{search_query}%"))
+        )
+
+    news = query.order_by(desc(News.created_date)).all()
+
+    return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
 
 @app.route("/my_news/<int:user_id>")
