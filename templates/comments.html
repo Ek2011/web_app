@@ -120,10 +120,26 @@
             {% for comment in comments %}
                 <div class="card m-2">
                     <div class="card-body">
-                        <p>{{ comment.content }}</p>
-                        <footer class="blockquote-footer">
-                            {{ comment.user.name }} | {{ comment.created_date.strftime('%d.%m.%Y %H:%M') }}
-                        </footer>
+                        <div class="small d-flex align-items-center mt-2 text-secondary">
+                        {% if comment.user.file %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden shadow-sm"
+                             style="width: 40px; height: 40px; flex-shrink: 0; margin-right: 15px;">
+                            <img src="{{ url_for('static', filename='uploads/' + comment.user.file) }}"
+                                 alt="{{ comment.user.name }}"
+                                 class="img-preview"
+                                 style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                 data-bs-toggle="modal" data-bs-target="#imageModal">
+                        {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden shadow-sm bg-primary"
+                             style="width: 40px; height: 40px; flex-shrink: 0; margin-right: 15px;">
+                            <span class="text-white" style="font-size: 1.5rem; font-weight: bold;">
+                                {{ comment.user.name[0] | upper }}
+                            </span>
+                        {% endif %}
+                        </div>
+                            {{ comment.user.name }}  |  {{ comment.created_date.strftime('%d.%m.%Y %H:%M') }}
+                        </div>
+                        <p class="fs-5 mt-2">{{ comment.content }}</p>
 
                         {# Кнопка удаления появится только у автора комментария #}
                         {% if current_user.is_authenticated and current_user.id == comment.user_id %}
