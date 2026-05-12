@@ -39,7 +39,7 @@ def main():
     db_session.global_init("db/blogs.db")
     app.run(host='0.0.0.0', port=5000)
 
-
+# доюавление новости
 @app.route('/news', methods=['GET', 'POST'])
 @login_required
 def add_news():
@@ -62,7 +62,7 @@ def add_news():
         return redirect('/')
     return render_template('news.html', title='Добавление новости', form=form, current_file=None)
 
-
+# удаление новостей
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
@@ -86,7 +86,7 @@ def news_delete(id):
         abort(404)
     return redirect('/')
 
-
+# редактирование новостей
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_news(id):
@@ -128,7 +128,7 @@ def edit_news(id):
         return redirect('/')
     return render_template('news.html', title='Редактирование новости', form=form, current_file=news.file)
 
-
+# лайк
 @app.route('/like/<int:id>')
 @login_required
 def like_action(id):
@@ -154,7 +154,7 @@ def like_action(id):
 
     return redirect(request.referrer or '/')
 
-
+# дЫзлайк
 @app.route('/dislike/<int:id>')
 @login_required
 def dislike_action(id):
@@ -177,7 +177,7 @@ def dislike_action(id):
 
     return redirect(request.referrer or '/')
 
-
+# избранное
 @app.route('/favorite/<int:id>')
 @login_required
 def favorite_action(id):
@@ -195,8 +195,7 @@ def favorite_action(id):
 
     return redirect(request.referrer or '/')
 
-
-# Добавляем <int:id> в путь
+# добавление комментариев
 @app.route('/addcomm/<int:id>', methods=['GET', 'POST'])
 def addcomm(id):
     form = CommForm()
@@ -210,26 +209,22 @@ def addcomm(id):
 
         db_sess.add(comment)
         db_sess.commit()
-        return redirect(f"/comments/{id}")  # /
+        return redirect(f"/comments/{id}")
 
-    # Передаем форму в шаблон
     return render_template('addcomm.html', title='Добавление комментария', form=form)
 
-
+# отображение новостей
 @app.route('/comments/<int:id>')
 def show_comments(id):
     db_sess = db_session.create_session()
 
-    # Получаем объект новости по id
     news = db_sess.query(News).filter(News.id == id).first()
 
-    # Получаем все комментарии к этой новости
     comments = db_sess.query(Comment).filter(Comment.news_id == id).all()
 
-    # Передаем ОБЪЕКТ news (чтобы работал news.id в шаблоне) и список comments
     return render_template('comments.html', title='Комментарии', news=news, comments=comments)
 
-
+# удаление комментариев
 @app.route('/delete_comment/<int:id>')
 @login_required
 def delete_comment(id):
@@ -244,7 +239,7 @@ def delete_comment(id):
     else:
         abort(404)
 
-
+# отображение новостей
 @app.route("/")
 def index():
     db_sess = db_session.create_session()
@@ -266,7 +261,7 @@ def index():
 
     return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
-
+# мои посты
 @app.route("/my_news/<int:user_id>")
 @login_required
 def my_news(user_id):
@@ -274,7 +269,7 @@ def my_news(user_id):
     news = db_sess.query(News).filter(News.user_id == user_id).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, UPLOAD_FOLDER=UPLOAD_FOLDER)
 
-
+# понравившееся
 @app.route("/liked")
 @login_required
 def liked():
@@ -282,7 +277,7 @@ def liked():
     news = db_sess.query(News).filter(News.likes.any(id=current_user.id)).order_by(desc(News.created_date)).all()
     return render_template("index.html", news=news, title="Понравившиеся посты", UPLOAD_FOLDER=UPLOAD_FOLDER)
 
-
+# добавление в избранное
 @app.route('/add_starred/<int:id>')
 @login_required
 def add_starred_news(id):
@@ -301,7 +296,7 @@ def add_starred_news(id):
     db_sess.commit()
     return redirect(request.referrer or '/')
 
-
+# избранное
 @app.route("/starred")
 @login_required
 def starred():
@@ -314,7 +309,7 @@ def starred():
                            title="Избранное",
                            UPLOAD_FOLDER=UPLOAD_FOLDER)  # Вот этого не хватало
 
-
+# регистрация
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
@@ -345,7 +340,7 @@ def reqister():
         return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
-
+# логин
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -358,7 +353,7 @@ def login():
         return render_template('login.html', message="Неправильный логин или пароль", form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
-
+# профиль
 @app.route('/profile/<int:id>')
 @login_required
 def profile(id):
@@ -372,36 +367,33 @@ def profile(id):
     if not current_user.is_authenticated or current_user.id != id:
         query = query.filter(News.is_private != True)
 
-    # Получаем все новости этого пользователя
     news = query.order_by(desc(News.created_date)).all()
 
     return render_template('profile.html', title=f'Профиль {user.name}', user=user, news=news)
 
-
+# редактирование профиля
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        # Находим пользователя в базе по ID текущего пользователя
         user = db_sess.query(User).filter(User.id == current_user.id).first()
 
         if form.file.data:
             file = form.file.data
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            user.file = filename  # Меняем данные у найденного объекта user
+            user.file = filename
 
         user.name = form.name.data
         user.email = form.email.data
         user.about = form.about.data
 
-        db_sess.commit()  # Теперь commit увидит изменения в объекте user
+        db_sess.commit()
         flash('Профиль обновлен!')
         return redirect(f'/profile/{user.id}')
 
-    # Предзаполнение формы текущими данными
     elif request.method == 'GET':
         form.name.data = current_user.name
         form.email.data = current_user.email
