@@ -367,8 +367,13 @@ def profile(id):
     if not user:
         abort(404)
 
+    query = db_sess.query(News).filter(News.user_id == id)
+
+    if not current_user.is_authenticated or current_user.id != id:
+        query = query.filter(News.is_private != True)
+
     # Получаем все новости этого пользователя
-    news = db_sess.query(News).filter(News.user_id == id).all()
+    news = query.order_by(desc(News.created_date)).all()
 
     return render_template('profile.html', title=f'Профиль {user.name}', user=user, news=news)
 
