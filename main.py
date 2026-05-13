@@ -402,5 +402,29 @@ def edit_profile():
     return render_template('edit_profile.html', title='Редактирование профиля', form=form)
 
 
+from flask import jsonify
+
+
+@app.route('/api/v1/news', methods=['GET'])
+def get_news_api():
+    db_sess = db_session.create_session()
+    news_list = db_sess.query(News).filter(News.is_private != True).all()
+
+    return jsonify({
+        "status": "success",
+        "count": len(news_list),
+        "data": [
+            {
+                "id": news.id,
+                "title": news.title,
+                "content": news.content,
+                "file": news.file,
+                "author_id": news.user_id,
+                "created_date": news.created_date.isoformat() if news.created_date else None
+            } for news in news_list
+        ]
+    })
+
+
 if __name__ == '__main__':
     main()
