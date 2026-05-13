@@ -36,8 +36,9 @@ def logout():
 
 
 def main():
+    port = int(os.environ.get("PORT", 5000))
     db_session.global_init("db/blogs.db")
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=port)
 
 # доюавление новости
 @app.route('/news', methods=['GET', 'POST'])
