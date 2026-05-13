@@ -352,7 +352,7 @@ def login():
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
         return render_template('login.html', message="Неправильный логин или пароль", form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    return render_template('login.html', title='Вход', form=form)
 
 # профиль
 @app.route('/profile/<int:id>')

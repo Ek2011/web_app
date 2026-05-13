@@ -37,13 +37,13 @@
             {% if news.file %}
                 <div class="p-2 text-center">
                     {% set ful_file = url_for('static', filename='uploads/' + news.file) %}
-                    {% if news.file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
+                    {% if news.file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg')) %}
                         <img src="{{ ful_file }}" style="max-width: 100%; max-height: 80vh; object-fit: contain;">
 
-                    {% elif news.file.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+                    {% elif news.file.lower().endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
                         <video src="{{ ful_file }}" controls style="max-width: 100%; max-height: 80vh;"></video>
 
-                    {% elif news.file.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+                    {% elif news.file.lower().endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
                         <audio src="{{ ful_file }}" controls style="width: 100%;" class="mt-2"></audio>
 
                     {% else %}
