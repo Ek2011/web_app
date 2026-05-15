@@ -1,4 +1,6 @@
 import os
+import uuid
+
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from sqlalchemy import desc
@@ -49,7 +51,9 @@ def add_news():
         file = form.file.data
         filename = None
         if file:
-            filename = secure_filename(file.filename)
+            secured_name = secure_filename(file.filename)
+            ext = os.path.splitext(secured_name)[1]
+            filename = f"{uuid.uuid4().hex}{ext}"
             file.save(os.path.join(UPLOAD_FOLDER, filename))
         db_sess = db_session.create_session()
         news = News()
@@ -73,16 +77,17 @@ def news_delete(id):
         filename = news.file
         news.likes.clear()
         news.dislikes.clear()
+        comments = db_sess.query(Comment).filter(Comment.news_id == id).all()
+        if comments:
+            for comment in comments:
+                db_sess.delete(comment)
+
+        if filename:
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            if os.path.exists(file_path):
+                os.remove(file_path)
         db_sess.delete(news)
         db_sess.commit()
-
-        # Проверяем, остались ли другие новости с таким же файлом
-        if filename:
-            other_news = db_sess.query(News).filter(News.file == filename).first()
-            if not other_news:
-                file_path = os.path.join(UPLOAD_FOLDER, filename)
-                if os.path.exists(file_path):
-                    os.remove(file_path)
     else:
         abort(404)
     return redirect('/')
@@ -112,17 +117,17 @@ def edit_news(id):
         news.is_private = form.is_private.data
 
         if file:
-            filename_new = secure_filename(file.filename)
+            secured_name = secure_filename(file.filename)
+            ext = os.path.splitext(secured_name)[1]
+            filename_new = f"{uuid.uuid4().hex}{ext}"
             file.save(os.path.join(UPLOAD_FOLDER, filename_new))
             news.file = filename_new
             db_sess.commit()
 
             if filename_old and filename_old != filename_new:
-                other_news = db_sess.query(News).filter(News.file == filename_old).first()
-                if not other_news:
-                    file_path = os.path.join(UPLOAD_FOLDER, filename_old)
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
+                file_path = os.path.join(UPLOAD_FOLDER, filename_old)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
         else:
             db_sess.commit()
 
